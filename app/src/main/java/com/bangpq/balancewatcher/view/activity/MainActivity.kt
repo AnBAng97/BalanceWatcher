@@ -16,9 +16,7 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainVM>() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun initViews() {
-
         showFragment(MainActivity::class.java, SplashFragment::class.java, null, false)
     }
 

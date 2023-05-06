@@ -47,7 +47,7 @@ abstract class BaseActivity<B : ViewBinding, V : ViewModel> : AppCompatActivity(
 
     override fun showFragment(tag: Class<*>, screenTag: Class<*>, data: Any?, isBack: Boolean) {
         val clazz = Class.forName(screenTag.name)
-        val fragment = clazz.getConstructor().newInstance() as BaseFragment<*, *>
+        val fragment = clazz.getConstructor().newInstance() as BaseFragment< *>
         fragment.mCallBack = this
         fragment.mData = data
         val tran = supportFragmentManager.beginTransaction()

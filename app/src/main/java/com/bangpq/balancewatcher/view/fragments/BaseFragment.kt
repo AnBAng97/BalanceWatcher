@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.viewbinding.ViewBinding
 import com.bangpq.balancewatcher.viewmodel.state.UIState
 import com.bangpq.googlenews.OnHomeCallBack
 import com.bangpq.googlenews.ProgressLoading
@@ -18,9 +17,9 @@ import com.bangpq.googlenews.notify
 import com.bangpq.googlenews.presenter.data.Constants
 import com.bangpq.googlenews.presenter.viewmodel.BaseVM
 
-abstract class BaseFragment<B : ViewBinding, V : BaseVM<*>> : Fragment(), View.OnClickListener,OnHomeCallBack {
+abstract class BaseFragment<V : BaseVM<*>> : Fragment(), View.OnClickListener, OnHomeCallBack {
     protected lateinit var mContext: Context
-    protected lateinit var mBind: B
+    protected lateinit var mBind: View
     protected lateinit var mVModel: V
     lateinit var mCallBack: OnHomeCallBack
     var mData: Any? = null
@@ -45,24 +44,22 @@ abstract class BaseFragment<B : ViewBinding, V : BaseVM<*>> : Fragment(), View.O
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mBind = initiateViewBinding(container)
+        mBind = ComposeView(requireContext()).apply {
+            setContent {
+                InitViews()
+            } }
         mVModel = ViewModelProvider(this).get(initiateViewModel())
-        return mBind.root
+        return mBind
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        ComposeView(requireContext()).apply {
-            setContent {
-                initViews()
-            }
-        }
     }
-@Composable
-    abstract fun initViews()
+
+    @Composable
+    abstract fun InitViews()
     abstract fun initiateViewModel(): Class<V>
-    abstract fun initiateViewBinding(container: ViewGroup?): B
+//    abstract fun initiateViewBinding(container: ViewGroup?): View
 
     open fun clickView(v: View?) {
         TODO("Not yet implemented")

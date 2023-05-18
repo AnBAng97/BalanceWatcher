@@ -1,16 +1,12 @@
 package com.bangpq.balancewatcher.view.fragments
 
 import android.util.Log
-import android.view.ViewGroup
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.lifecycleScope
-import com.bangpq.balancewatcher.databinding.FragmentSplashBinding
-import com.bangpq.balancewatcher.view.compose.SplashScreen
+import androidx.navigation.compose.rememberNavController
+import com.bangpq.balancewatcher.view.compose.navigation.RootNavigation
 import com.bangpq.googlenews.presenter.viewmodel.SplashVM
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
-class SplashFragment : BaseFragment<FragmentSplashBinding, SplashVM>() {
+class SplashFragment : BaseFragment<SplashVM>() {
     override fun closeApp() {
         TODO("Not yet implemented")
     }
@@ -18,26 +14,19 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashVM>() {
     override fun showFragment(tag: Class<*>, screenTag: Class<*>, data: Any?, isBack: Boolean) {
         TODO("Not yet implemented")
     }
-@Composable
-    override fun initViews() {
-        SplashScreen.Screen()
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            mVModel.dataState.collectLatest {
-//                if (it == null) return@collectLatest
-////                updateUI(it)
-//            }
-//        }
-//        lifecycleScope.launch {
-//            mVModel.latest(("US"))
-//        }
+
+    @Composable
+    override fun InitViews() {
+        val navController = rememberNavController()
+        RootNavigation(
+            navController = navController
+        )
     }
+
 
     override fun initiateViewModel(): Class<SplashVM> {
         return SplashVM::class.java
     }
-
-    override fun initiateViewBinding(container: ViewGroup?): FragmentSplashBinding {
-return FragmentSplashBinding.inflate(layoutInflater,container,false)   }
 
     override fun handleSuccess(data: Any?, key: Int) {
         Log.i("handleSuccess", "key: $key")

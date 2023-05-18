@@ -1,6 +1,5 @@
 package com.bangpq.balancewatcher.view.compose.homescreen
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import com.bangpq.balancewatcher.view.compose.Colors
 import androidx.compose.foundation.layout.*
@@ -13,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -23,8 +21,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.bangpq.balancewatcher.R
-import com.bangpq.balancewatcher.view.compose.noRippleClickable
+import com.bangpq.balancewatcher.view.compose.navigation.HomeNavigation
+import com.bangpq.balancewatcher.view.compose.navigation.NavigationBar
 
 @Preview
 @Composable
@@ -34,15 +35,19 @@ fun HomeScreenPreview() {
 
 object HomeScreen {
     @Composable
-    fun Screen() {
+    fun Screen(
+        navController: NavHostController = rememberNavController()
+    ) {
         Scaffold(backgroundColor = Color.White,
-            topBar = { TopBar() },
-            bottomBar = { Spacer(modifier = Modifier.height(55.dp)) }) { contentPadding ->
-            Box(modifier = Modifier.padding(contentPadding)) {
-                Body()
-            }
+//            topBar = { TopBar() },
+            bottomBar = { NavigationBar.BottomBar(navController = navController) }
+        )
+        {
+            Modifier.padding(it)
+            HomeNavigation(navController = navController)
         }
     }
+
 
     @Composable
     fun Body() {
@@ -50,14 +55,14 @@ object HomeScreen {
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .background(Color.White)
-                .fillMaxHeight()
-                .fillMaxWidth()
+                .fillMaxSize()
         ) {
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.padding(bottom = 53.dp).fillMaxSize()
             ) {
+                TopBar()
                 Balance()
                 OptionBar()
                 RecentTransaction()
@@ -72,7 +77,7 @@ object HomeScreen {
     fun TopBar() {
         Row(
             modifier = Modifier
-                .padding(start = 24.dp, end = 24.dp, top = 43.dp)
+                .padding(start = 24.dp, end = 24.dp, top = 35.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -152,11 +157,9 @@ object HomeScreen {
                         contentColor = Color.White
                     ) {
                         Icon(
-                            painter = painterResource(id = item.icon),
-                            contentDescription = null,
+                            painter = painterResource(id = item.icon), contentDescription = null,
 //                        contentScale = ContentScale.Fit,
-                            modifier = Modifier.padding(16.dp),
-                            tint = Color.White
+                            modifier = Modifier.padding(16.dp), tint = Color.White
                         )
                     }
                     Text(
@@ -175,25 +178,7 @@ object HomeScreen {
 
     @Composable
     fun RecentTransaction() {
-        var visible by remember { mutableStateOf(true) }
-        val density = LocalDensity.current
-        AnimatedVisibility(
-            visible = visible,
-            enter = slideInVertically {
-                // Slide in from 40 dp from the top.
-                with(density) { -40.dp.roundToPx() }
-            } + expandVertically(
-                // Expand from the top.
-                expandFrom = Alignment.Bottom
-            ) + fadeIn(
-                // Fade in with the initial alpha of 0.3f.
-                initialAlpha = 0.3f
-            ),
-            exit = slideOutVertically() + shrinkVertically() + fadeOut()
-        ) {
-//            Text("Hello", Modifier.fillMaxWidth().height(200.dp))
-        }
-
+        val recentTransactionList = listOf(1, 2, 3, 4)
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -210,9 +195,7 @@ object HomeScreen {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Recent Transactions",
-                    color = Colors.cyan,
-                    fontSize = 16.sp
+                    text = "Recent Transactions", color = Colors.cyan, fontSize = 16.sp
                 )
                 Text(
                     text = "See all",
@@ -229,47 +212,79 @@ object HomeScreen {
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .background(Colors.cyan)
-                    .padding(start = 24.dp, end = 24.dp, top = 15.dp, bottom = 45.dp)
-
+                    .padding(start = 24.dp, end = 24.dp),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(55.dp)
-                        .background(Color.White)
-                        .padding(start = 17.dp, end = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-
-                        painter = painterResource(id = R.drawable.ic_bidv),
-                        contentDescription = null,
-                        contentScale = ContentScale.Inside,
-                        modifier = Modifier
-                            .width(80.dp)
-                            .height(50.dp)
-                    )
-                }
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(15.dp)
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(55.dp)
-                        .background(Color.White),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_bidv),
-                        contentDescription = null
-                    )
+                recentTransactionList.forEach {
+                    AddRecentTransaction(it)
                 }
             }
         }
     }
+
+    @Composable
+    private fun AddRecentTransaction(i: Int) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp)
+                .padding(start = 17.dp, end = 10.dp)
+                .clip(shape = RoundedCornerShape(10))
+                .background(Color.White)
+                ,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_bidv),
+                contentDescription = null,
+                contentScale = ContentScale.Inside,
+                modifier = Modifier
+                    .width(80.dp)
+                    .height(50.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .width(175.dp)
+                    .height(30.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "BIDV",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(72,93,166)
+                )
+                Text(
+                    text = "17 August 2022",
+                    fontSize = 8.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Gray
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .width(175.dp)
+                    .height(30.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "-400",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Red
+                )
+                Text(
+                    text = "Shopping",
+                    fontSize = 8.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Gray
+                )
+            }
+        }
+
+    }
+
 
 }
 

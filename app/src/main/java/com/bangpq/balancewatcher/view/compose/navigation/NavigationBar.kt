@@ -35,7 +35,7 @@ object NavigationBar {
                 BottomBar(navController = navController)
             }) {
             Modifier.padding(it)
-            BottomNavGraph(
+            HomeNavigation(
                 navController = navController
             )
         }
@@ -49,13 +49,15 @@ object NavigationBar {
             NavigationBarItem.Transaction,
             NavigationBarItem.Profile
         )
+
         val navStackBackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navStackBackEntry?.destination
         Row(
             modifier = Modifier
-                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 8.dp)
-                .background(Color.Transparent)
-                .fillMaxWidth(),
+//                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 8.dp)
+                .background(Color.White)
+                .fillMaxWidth()
+                .height(53.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -82,18 +84,12 @@ object NavigationBar {
             modifier = Modifier
                 .height(40.dp)
                 .clip(CircleShape)
-                .noRippleClickable {
+                .clickable {
                     navController.navigate(screen.route) {
                         popUpTo(navController.graph.findStartDestination().id)
                         launchSingleTop = true
                     }
                 }
-//                .clickable(onClick = {
-//                    navController.navigate(screen.route) {
-//                        popUpTo(navController.graph.findStartDestination().id)
-//                        launchSingleTop = true
-//                    }
-//                })
         ) {
             Row(
                 modifier = Modifier
